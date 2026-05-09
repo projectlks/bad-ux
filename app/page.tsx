@@ -1,65 +1,165 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState, useRef } from "react";
+import { SpeakerWaveIcon, SpeakerXMarkIcon } from "@heroicons/react/24/outline";
+
+type ActionType = "INCREASE" | "DECREASE" | null;
+
+export default function DiceVolumeControl() {
+  const [volume, setVolume] = useState<number>(50);
+  const [rolledNumber, setRolledNumber] = useState<number | null>(null);
+  const [action, setAction] = useState<ActionType>(null);
+  const [isRolling, setIsRolling] = useState<boolean>(false);
+
+  // Hold Button အတွက် State များ
+  const [holdMessage, setHoldMessage] = useState<string>(
+    "Hold button for EXACTLY 3.14s to apply",
+  );
+  const [messageColor, setMessageColor] = useState<string>("text-slate-500");
+  const pressTimeRef = useRef<number | null>(null);
+
+  const rollNumberDice = () => {
+    setIsRolling(true);
+    setHoldMessage("Hold button for EXACTLY 3.14s to apply");
+    setMessageColor("text-slate-500");
+    setTimeout(() => {
+      const num = Math.floor(Math.random() * 6) + 1;
+      setRolledNumber(num);
+      setIsRolling(false);
+    }, 600);
+  };
+
+  const rollActionDice = () => {
+    setIsRolling(true);
+    setTimeout(() => {
+      const isIncrease = Math.random() > 0.5;
+      setAction(isIncrease ? "INCREASE" : "DECREASE");
+      setIsRolling(false);
+    }, 600);
+  };
+
+  // Mouse စနှိပ်တဲ့အချိန်ကို မှတ်ပါမယ်
+  const handlePointerDown = () => {
+    if (rolledNumber === null || action === null) return;
+    pressTimeRef.current = Date.now();
+    setHoldMessage("Holding... Don't let go too early!");
+    setMessageColor("text-orange-500 animate-pulse");
+  };
+
+  // Mouse လွှတ်လိုက်တဲ့အချိန်မှာ စစ်ဆေးပါမယ်
+  const handlePointerUp = () => {
+    if (!pressTimeRef.current || rolledNumber === null || action === null)
+      return;
+
+    const durationInSeconds = (Date.now() - pressTimeRef.current) / 1000;
+    pressTimeRef.current = null;
+
+    // ၃.၁၀ စက္ကန့် နဲ့ ၃.၁၈ စက္ကန့် ကြားဆိုရင် အောင်မြင်ပါတယ်
+    if (durationInSeconds >= 3.1 && durationInSeconds <= 3.18) {
+      setVolume((prev) => {
+        let newVolume =
+          action === "INCREASE" ? prev + rolledNumber : prev - rolledNumber;
+        if (newVolume > 100) newVolume = 100;
+        if (newVolume < 0) newVolume = 0;
+        return newVolume;
+      });
+      setRolledNumber(null);
+      setAction(null);
+      setHoldMessage(
+        `Success! You held it for ${durationInSeconds.toFixed(2)}s.`,
+      );
+      setMessageColor("text-emerald-500 font-bold");
+    } else {
+      // ကျရှုံးရင် အကုန် Reset ချပါမယ်
+      setRolledNumber(null);
+      setAction(null);
+      setHoldMessage(
+        `FAILED! You held it for ${durationInSeconds.toFixed(2)}s. Must be exactly 3.14s! Try again.`,
+      );
+      setMessageColor("text-red-500 font-bold");
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4 font-sans user-select-none">
+      <div className="max-w-lg w-full bg-white rounded-2xl shadow-xl p-8 border border-slate-200 text-center">
+        <h1 className="text-2xl font-bold text-slate-800 mb-8">
+          <span>Dice Volume Controller</span>
+        </h1>
+
+ 
+        <div className="flex items-center justify-center gap-4 mb-10 bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-inner">
+          {volume === 0 ? (
+            <SpeakerXMarkIcon className="w-8 h-8 text-slate-400" />
+          ) : (
+            <SpeakerWaveIcon className="w-8 h-8 text-emerald-500" />
+          )}
+          <div className="w-full h-4 bg-slate-200 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-emerald-500 transition-all duration-300"
+              style={{ width: `${volume}%` }}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
+          <span className="text-slate-700 font-mono text-xl w-12 font-semibold">
+            {volume}%
+          </span>
         </div>
-      </main>
-    </div>
+
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="bg-slate-100 p-4 rounded-xl flex flex-col items-center justify-center min-h-30 border border-slate-200">
+            <span className="text-slate-500 text-sm mb-2 font-medium">
+              Volume Amount
+            </span>
+            {rolledNumber ? (
+              <span className="text-4xl font-bold text-slate-800 my-2">
+                {rolledNumber}
+              </span>
+            ) : (
+              <button
+                onClick={rollNumberDice}
+                disabled={isRolling}
+                className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50">
+                <span>Roll Dice 🎲</span>
+              </button>
+            )}
+          </div>
+
+          <div className="bg-slate-100 p-4 rounded-xl flex flex-col items-center justify-center min-h-30 border border-slate-200">
+            <span className="text-slate-500 text-sm mb-2 font-medium">
+              Action (+ / -)
+            </span>
+            {action ? (
+              <span
+                className={`text-4xl font-bold my-2 ${action === "INCREASE" ? "text-emerald-500" : "text-red-500"}`}>
+                {action === "INCREASE" ? "+" : "-"}
+              </span>
+            ) : (
+              <button
+                onClick={rollActionDice}
+                disabled={isRolling}
+                className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50">
+                <span>Roll Dice 🎲</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Precision Hold Button */}
+        <button
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={() => pressTimeRef.current && handlePointerUp()} // Mouse လွတ်သွားရင်လည်း စစ်မယ်
+          disabled={rolledNumber === null || action === null}
+          className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold rounded-xl transition-colors shadow-md disabled:cursor-not-allowed select-none active:scale-95">
+          <span>Apply Changes</span>
+        </button>
+
+        {/* Status Message */}
+        <p
+          className={`text-sm mt-6 transition-colors duration-300 ${messageColor}`}>
+          <span>{holdMessage}</span>
+        </p>
+      </div>
+    </main>
   );
 }
