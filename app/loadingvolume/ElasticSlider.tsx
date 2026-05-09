@@ -9,7 +9,6 @@ import {
   useMotionValueEvent,
   useTransform,
 } from "motion/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 
 const MAX_OVERFLOW = 50;
 
@@ -69,21 +68,11 @@ const Slider: React.FC<SliderProps> = ({
   leftIcon,
   rightIcon,
 }) => {
-  // အတည်ပြုပြီးသား Value နှင့် ဆွဲနေစဉ်ယာယီပြမည့် tempValue
   const [value, setValue] = useState<number>(defaultValue);
   const [tempValue, setTempValue] = useState<number>(defaultValue);
 
-  // Modal နှင့် Quiz အတွက် States
-  const [modalStatus, setModalStatus] = useState<"closed" | "quiz" | "error">(
-    "closed",
-  );
-  const [mathQuestion, setMathQuestion] = useState({
-    num1: 0,
-    num2: 0,
-    operator: "+",
-    answer: 0,
-  });
-  const [userAnswer, setUserAnswer] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingSeconds, setLoadingSeconds] = useState(3);
 
   const sliderRef = useRef<HTMLDivElement>(null);
   const [region, setRegion] = useState<"left" | "middle" | "right">("middle");
@@ -127,7 +116,6 @@ const Slider: React.FC<SliderProps> = ({
       }
       newValue = Math.min(Math.max(newValue, startingValue), maxValue);
 
-      // ဆွဲနေစဉ်မှာ tempValue ကိုပဲ အရင်ပြောင်းပေးပါမယ်
       setTempValue(newValue);
       clientX.jump(e.clientX);
     }
@@ -141,66 +129,23 @@ const Slider: React.FC<SliderProps> = ({
   const handlePointerUp = () => {
     animate(overflow, 0, { type: "spring", bounce: 0.5 });
 
-    // Slider ကို လွှတ်လိုက်တာနဲ့ Quiz ပေါ်လာပါမယ်
-    if (modalStatus === "closed") {
-      generateMathQuestion();
-      setModalStatus("quiz");
+    if (!isLoading && Math.round(tempValue) !== Math.round(value)) {
+      // 🤡 Bad UX: အသံတိုးရင် ပိုကြာကြာ စောင့်ခိုင်းမယ် (5s မှ 14s အထိ)
+      const randomSecs =
+        tempValue < 20
+          ? Math.floor(Math.random() * 10) + 5
+          : Math.floor(Math.random() * 4) + 1;
+
+      setLoadingSeconds(randomSecs);
+      setIsLoading(true);
+
+      setTimeout(() => {
+        setValue(tempValue);
+        setIsLoading(false);
+      }, randomSecs * 1000);
     }
   };
 
-  // ကျပန်း သင်္ချာမေးခွန်းထုတ်ရန်
-  const generateMathQuestion = () => {
-    const operators = ["+", "-", "*", "/"];
-    const randomOp = operators[Math.floor(Math.random() * operators.length)];
-    let n1 = 0,
-      n2 = 0,
-      ans = 0;
-
-    switch (randomOp) {
-      case "+":
-        n1 = Math.floor(Math.random() * 50) + 1;
-        n2 = Math.floor(Math.random() * 50) + 1;
-        ans = n1 + n2;
-        break;
-      case "-":
-        const a = Math.floor(Math.random() * 50) + 1;
-        const b = Math.floor(Math.random() * 50) + 1;
-        n1 = Math.max(a, b);
-        n2 = Math.min(a, b);
-        ans = n1 - n2;
-        break;
-      case "*":
-        n1 = Math.floor(Math.random() * 12) + 1;
-        n2 = Math.floor(Math.random() * 12) + 1;
-        ans = n1 * n2;
-        break;
-      case "/":
-        n2 = Math.floor(Math.random() * 12) + 1;
-        ans = Math.floor(Math.random() * 12) + 1;
-        n1 = n2 * ans;
-        break;
-    }
-
-    setMathQuestion({ num1: n1, num2: n2, operator: randomOp, answer: ans });
-    setUserAnswer("");
-  };
-
-  // အဖြေကို စစ်ဆေးရန်
-  const handleAnswerSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (parseInt(userAnswer) === mathQuestion.answer) {
-      // မှန်ရင် အတည်ပြုပါမယ်
-      setValue(tempValue);
-      setModalStatus("closed");
-    } else {
-      // မှားရင် Error ပြပြီး Volume 0 ဖြစ်သွားပါမယ်
-      setModalStatus("error");
-      setValue(0);
-      setTempValue(0);
-    }
-  };
-
-  // UI မှာ အပြာရောင် Track ပြည့်တာကို tempValue နဲ့ တွက်ပါမယ်
   const getRangePercentage = (): number => {
     const totalRange = maxValue - startingValue;
     if (totalRange === 0) return 0;
@@ -258,12 +203,11 @@ const Slider: React.FC<SliderProps> = ({
                 }
                 return "center";
               }),
-              height: useTransform(scale, [1, 1.2], [12, 16]), // ပုံမှန် 12px, Hover လုပ်ရင် 16px
+              height: useTransform(scale, [1, 1.2], [12, 16]),
               marginTop: useTransform(scale, [1, 1.2], [0, -3]),
               marginBottom: useTransform(scale, [1, 1.2], [0, -3]),
             }}
             className="flex grow">
-            {/* အစ်ကိုပေးထားတဲ့ မူလ UI အတိုင်းပါပဲ */}
             <div className="relative h-full grow overflow-hidden rounded-full bg-gray-400">
               <div
                 className="absolute h-full bg-gray-500 rounded-full"
@@ -287,9 +231,8 @@ const Slider: React.FC<SliderProps> = ({
         </motion.div>
       </motion.div>
 
-      {/* Custom Modal & Alert System */}
       <AnimatePresence>
-        {modalStatus !== "closed" && (
+        {isLoading && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -299,72 +242,39 @@ const Slider: React.FC<SliderProps> = ({
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
-              {modalStatus === "quiz" ? (
-                // Quiz Modal
-                <div className="p-6 text-center">
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">
-                    Security Check!
-                  </h3>
-                  <p className="text-gray-500 text-sm mb-6">
-                    Please solve the following math problem to change the
-                    volume:
-                  </p>
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden p-8 flex flex-col items-center justify-center">
+              <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mb-6"></div>
 
-                  <div className="bg-gray-100 rounded-xl p-4 mb-6">
-                    <span className="text-2xl font-black text-blue-600">
-                      {mathQuestion.num1}{" "}
-                      <span className="text-gray-500">
-                        {mathQuestion.operator}
-                      </span>{" "}
-                      {mathQuestion.num2} = ?
-                    </span>
-                  </div>
+              <h3 className="text-2xl font-black text-gray-800 mb-2 tracking-widest">
+                LOADING...
+              </h3>
+              <p className="text-gray-500 text-sm font-medium text-center">
+                Applying volume changes. <br /> Please wait{" "}
+                <span className="text-red-600 font-black text-xl mx-1">
+                  {loadingSeconds}
+                </span>{" "}
+                seconds.
+              </p>
 
-                  <form onSubmit={handleAnswerSubmit} className="space-y-4">
-                    <input
-                      type="text"
-                      value={userAnswer}
-                      onChange={(e) => setUserAnswer(e.target.value)}
-                      className="w-full bg-white border-2 border-gray-200 focus:border-blue-500 p-3 rounded-lg text-center text-lg font-bold outline-none"
-                      placeholder="Enter answer..."
-                      autoFocus
-                    />
-                    <div className="flex gap-2 mt-4">
-                      <button
-                        type="submit"
-                        className="flex-2 bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700">
-                        Confirm
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleAnswerSubmit()}
-                        className="flex-1 bg-gray-200 text-gray-600 py-3 rounded-lg font-bold hover:bg-gray-300">
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              ) : (
-                // Custom Error Alert Screen
-                <div className="p-8 text-center ">
-                  <div className="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-lg shadow-red-200">
-                    <XMarkIcon className="w-8 h-8" />
-                  </div>
-                  <h3 className="text-xl font-black text-red-600 mb-2">
-                    ACCESS DENIED
-                  </h3>
-                  <p className="text-red-800 text-sm mb-6 leading-relaxed">
-                    Incorrect answer. <br />
-                    <strong>Volume has been reset to 0.</strong>
-                  </p>
-                  <button
-                    onClick={() => setModalStatus("closed")}
-                    className="w-full bg-red-600 text-white py-3 rounded-lg font-bold uppercase shadow-md hover:bg-red-700">
-                    I Understand
-                  </button>
-                </div>
-              )}
+              {/* 😭 Fake Technical Message */}
+              <p className="text-xs text-gray-400 mt-3 tracking-wide font-mono animate-pulse text-center">
+                {tempValue < 20
+                  ? "Syncing low volume with cloud..."
+                  : "Optimizing audio pipeline..."}
+              </p>
+
+              {/* 😈 Fake progress bar stuck at 99% */}
+              <div className="w-full h-3 bg-gray-200 rounded-full mt-6 overflow-hidden relative">
+                <motion.div
+                  initial={{ width: "0%" }}
+                  animate={{ width: "95%" }}
+                  transition={{
+                    duration: loadingSeconds - 0.5,
+                    ease: "linear",
+                  }}
+                  className="h-full bg-blue-600 rounded-full"
+                />
+              </div>
             </motion.div>
           </motion.div>
         )}
