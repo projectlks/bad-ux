@@ -4,7 +4,7 @@ import { SpeakerWaveIcon, SpeakerXMarkIcon } from "@heroicons/react/24/outline";
 
 export default function Page() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center  overflow-hidden">
       <h1 className="text-2xl font-bold mb-10 text-gray-700">
         Volume Setting (Good Luck)
       </h1>
