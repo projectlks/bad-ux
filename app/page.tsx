@@ -6,15 +6,12 @@ import { UX_PROJECTS } from "../data/projects";
 
 export default function BadUXHome() {
   // 🌟 မိမိ၏ တကယ့် GitHub လင့်ခ်ကို ဤနေရာတွင် အစားထိုးပါ
-  const GITHUB_URL = "https://github.com//projectlks/bad-ux";
+  const GITHUB_URL = "https://github.com/projectlks/bad-ux";
 
-  //github.com/projectlks/bad-ux.git
-  https: return (
-    <div className="min-h-screen  flex flex-col items-center p-6 sm:p-12 font-sans select-none relative overflow-x-hidden">
+  return (
+    <div className="min-h-screen flex flex-col items-center p-6 sm:p-12 font-sans select-none relative overflow-x-hidden">
       {/* 📌 Background Details */}
-      <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(#000_1px,transparent_1px)] bg-size-[16px_16px]"></div>
-
- 
+      <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(#000_1px,transparent_1px)] bg-[size:16px_16px]"></div>
 
       <div className="w-full max-w-full relative z-10">
         {/* 📌 Header Section */}
@@ -28,7 +25,7 @@ export default function BadUXHome() {
             </span>
             <h1 className="text-5xl sm:text-6xl font-black text-gray-900 mb-6 tracking-wide">
               The Museum of{" "}
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-red-500 to-orange-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
                 Bad UX
               </span>
             </h1>
@@ -38,13 +35,38 @@ export default function BadUXHome() {
             </p>
           </motion.div>
 
-          <div className="w-fit mx-auto mt-8">
-            <a
+          {/* 🌟 Buttons Section with Framer Motion */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }} // စာတွေပေါ်ပြီး နည်းနည်းနေမှ ထွက်လာအောင် delay ထည့်ထားပါသည်
+            className="flex flex-wrap items-center justify-center gap-4 w-fit mx-auto mt-8">
+            {/* 🌟 Button 1: LinkedIn (For Professional Connections) */}
+            <motion.a
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              href="https://linkedin.com/in/your_profile"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-[#0A66C2] text-white hover:bg-[#084e96] py-2 px-5 rounded-full shadow-md hover:shadow-lg transition-colors font-bold text-sm shrink-0">
+              {/* LinkedIn Logo SVG */}
+              <svg
+                className="w-4 h-4 shrink-0 fill-current"
+                viewBox="0 0 24 24"
+                aria-hidden="true">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+              </svg>
+              <span>Follow for more chaos</span>
+            </motion.a>
+
+            {/* Button 2: GitHub Star */}
+            <motion.a
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               href={GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:text-gray-900 hover:border-gray-300 hover:bg-gray-50 py-2 px-4 rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 font-bold text-sm">
-              {/* GitHub Logo SVG */}
+              className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:text-gray-900 hover:border-gray-300 hover:bg-gray-50 py-2 px-5 rounded-full shadow-sm hover:shadow-md transition-colors font-bold text-sm shrink-0">
               <svg
                 className="w-5 h-5 shrink-0"
                 fill="currentColor"
@@ -57,12 +79,12 @@ export default function BadUXHome() {
                 />
               </svg>
               <span>Star on GitHub</span>
-            </a>
-          </div>
+            </motion.a>
+          </motion.div>
         </div>
 
         {/* 📌 Projects Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3  gap-6 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-6 w-full">
           {UX_PROJECTS.map((project, index) => {
             const IconComponent = project.icon;
 
@@ -73,8 +95,10 @@ export default function BadUXHome() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="h-full">
+
+              
                 <Link href={project.path} className="block group h-full">
-                  <div className="bg-white border border-gray-200 rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col group-hover:-translate-y-1">
+                  <div className="bg-white border border-gray-200 rounded-[2rem] p-8 shadow-sm hover:shadow transition-all duration-300 h-full flex flex-col group-hover:-translate-y-1">
                     <div className="flex items-center gap-4 mb-4">
                       <div
                         className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${project.bg}`}>

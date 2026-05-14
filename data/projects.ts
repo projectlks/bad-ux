@@ -66,6 +66,7 @@ import {
     CubeIcon,
     ClockIcon,
     ArrowsUpDownIcon,
+    BugAntIcon,
 } from "@heroicons/react/24/outline";
 
 // 🌟 'any' မသုံးဘဲ Type ကို တိတိကျကျ သတ်မှတ်ခြင်း
@@ -161,5 +162,14 @@ export const UX_PROJECTS: BadUXProject[] = [
         path: "/volume/vertical",
         color: "text-cyan-500",
         bg: "bg-cyan-50",
+    },
+    {
+        id: "random",
+        title: "Chaos Slider",
+        description: "A perfectly normal slider, but the numbers are completely scrambled. Pure gaslighting.",
+        icon: BugAntIcon, // @heroicons/react/24/outline ထဲကနေ BugAntIcon လေး Import လုပ်လိုက်ပါ
+        path: "/volume/random",
+        color: "text-rose-500",
+        bg: "bg-rose-50",
     },
 ];
