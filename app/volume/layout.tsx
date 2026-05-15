@@ -10,7 +10,7 @@ export default function VolumeLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="h-screen ">
       <nav className="fixed top-0 left-0 right-0 z-50 p-4 pointer-events-none">
         <div className="max-w-7xl mx-auto">
           <Link href="/" className="pointer-events-auto inline-block">
@@ -24,7 +24,7 @@ export default function VolumeLayout({
           </Link>
         </div>
       </nav>
-      <div className="pt-16">{children}</div>
+      <div >{children}</div>
     </div>
   );
 }
