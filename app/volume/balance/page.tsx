@@ -366,7 +366,7 @@ export default function BalanceSliderDrag() {
   };
 
   return (
-    <div className=" h-screen bg-gray-50 flex flex-col items-center justify-center font-sans select-none relative ">
+    <div className=" h-screen  flex flex-col  items-center justify-center font-sans select-none relative ">
       <div className="w-full max-w-lg border border-gray-200 rounded-[2rem] p-8 shadow-xl relative z-10 flex flex-col items-center">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-black text-gray-800">Balance Volume</h2>
@@ -446,7 +446,7 @@ export default function BalanceSliderDrag() {
             </AnimatePresence>
           </motion.div>
 
-          <div className="w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[20px] border-b-gray-400 mt-1 z-0"></div>
+          <div className="w-0 h-0 border-l-15 border-l-transparent border-r-15 border-r-transparent border-b-20 border-b-gray-400 mt-1 z-0"></div>
           <div className="w-12 h-2 bg-gray-300 rounded-full mt-1"></div>
         </div>
 
@@ -455,7 +455,7 @@ export default function BalanceSliderDrag() {
           <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">
             Grab & Drag Weights
           </p>
-          <div className="flex gap-4 items-end mb-6 min-h-[50px]">
+          <div className="flex gap-4 items-end mb-6 min-h-12.5">
             {WEIGHT_OPTIONS.map((w) => (
               <div
                 key={w}

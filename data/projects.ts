@@ -1,61 +1,3 @@
-// import {
-//     ArrowDownCircleIcon,
-//     RocketLaunchIcon,
-//     SquaresPlusIcon,
-//     CursorArrowRaysIcon,
-// } from "@heroicons/react/24/outline";
-
-// // 🌟 'any' မသုံးဘဲ Type ကို တိတိကျကျ သတ်မှတ်ခြင်း
-// export type BadUXProject = {
-//     id: string;
-//     title: string;
-//     description: string;
-//     icon: React.ElementType;
-//     path: string;
-//     color: string;
-//     bg: string;
-// };
-
-// // နောက်ပိုင်း Project အသစ်တွေ ထပ်တိုးရင် ဒီ Array ထဲမှာ လာပေါင်းထည့်ရုံပါပဲ
-// export const UX_PROJECTS: BadUXProject[] = [
-//     {
-//         id: "gravity",
-//         title: "Gravity Volume",
-//         description: "The slider falls back to zero due to gravity. Catch it if you can.",
-//         icon: ArrowDownCircleIcon,
-//         path: "/volume/gravity",
-//         color: "text-orange-500",
-//         bg: "bg-orange-50",
-//     },
-//     {
-//         id: "momentum",
-//         title: "Momentum Slider",
-//         description: "Slippery ice physics. Targeting exact numbers is impossible.",
-//         icon: RocketLaunchIcon,
-//         path: "/volume/momentum",
-//         color: "text-blue-500",
-//         bg: "bg-blue-50",
-//     },
-//     {
-//         id: "hundred",
-//         title: "100 Sliders (Average)",
-//         description: "100 separate sliders. You need all 100 at max to get 100%.",
-//         icon: SquaresPlusIcon,
-//         path: "/volume/hundred",
-//         color: "text-red-500",
-//         bg: "bg-red-50",
-//     },
-//     {
-//         id: "dragdrop",
-//         title: "Drag & Drop Pile",
-//         description: "Drag exactly 50 icons into the box to get 50% volume.",
-//         icon: CursorArrowRaysIcon,
-//         path: "/volume/drag-and-drop",
-//         color: "text-purple-500",
-//         bg: "bg-purple-50",
-//     },
-// ];
-
 import {
     ArrowDownCircleIcon,
     RocketLaunchIcon,
@@ -67,6 +9,8 @@ import {
     ClockIcon,
     ArrowsUpDownIcon,
     BugAntIcon,
+    ScaleIcon,
+    CameraIcon
 } from "@heroicons/react/24/outline";
 
 // 🌟 'any' မသုံးဘဲ Type ကို တိတိကျကျ သတ်မှတ်ခြင်း
@@ -171,5 +115,23 @@ export const UX_PROJECTS: BadUXProject[] = [
         path: "/volume/random",
         color: "text-rose-500",
         bg: "bg-rose-50",
+    },
+    {
+        id: "balance",
+        title: "Balance Slider",
+        description: "Volume is determined by torque. Grab weights, drop them on the seesaw, and pray they don't slide off when it tilts too much.",
+        icon: ScaleIcon, // 🌟 အပေါ်ဆုံးမှာ import { ScaleIcon } from "@heroicons/react/24/outline"; ဆိုပြီး ထည့်ပေးပါ
+        path: "/volume/balance",
+        color: "text-blue-500",
+        bg: "bg-blue-50",
+    },
+    {
+        id: "ocr-volume",
+        title: "Handwritten Volume",
+        description: "Volume control is too easy. Let's make it harder. Write your desired volume on a paper, take a photo, and our AI will read it.",
+        icon: CameraIcon, // 🌟 import { CameraIcon } from "@heroicons/react/24/outline"; 
+        path: "/volume/ocr",
+        color: "text-emerald-500",
+        bg: "bg-emerald-50",
     },
 ];
